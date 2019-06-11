@@ -54,12 +54,27 @@ while True:
 		elif strTipo =! palTag[0][1]:
 		
 			#Usar definición de Wiktionary y hacer reporte de la diferencia de pattern.
-			
+			#archivoReporte = open('reporte.txt, "w"')
+			#archivoReporte.write('Wiktionary y pattern no coinciden en la definición de tipo de la sig. palabra: ', values[palabra])
 		elif strTipo == None and esValidaPattern(palTag[0][1]):
 		
 			#Ponerle definición a la palabra. Guardar definición en archivo local.
 			
-			#Si el archivo no existe, crearlo. Si ya existe, abrirlo como lectura/escritura y hacer un append al final del archivo.
+			#diseñoDef = [[sg.Text('Parece ser que su palabra no es una conocida. Inserte una definición para la misma:')],
+			#			[sg.Input(), sg.Submit('Agregar def.')]]
+			
+			#ventanaDef = sg.Window('Agregar definición').Layout(diseñoDef)
+			
+			#while True:
+			#	evento, valores: ventanaDef.Read()
+			#	
+			#	if evento == 'Agregar def.':
+			#		Desaparecer ventana anterior.
+			#		Si existe el archivo de definiciones, modificarlo, y si no, crearlo.
+			#		Agregar la definición nueva.
+			#	sg.Popup('Definición agregada')	
+			
+			#Agregar la palabra nueva a la lista de palabras de la sopa.
 			
 		else: #No se encuentra en ningun recurso
 			#No incluir y reportar.
