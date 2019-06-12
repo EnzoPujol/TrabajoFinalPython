@@ -19,6 +19,8 @@ diseñoPalabras = [[sg.Text('Ingrese las palabra a buscar: ')],
 					
 ventanaPal = sg.Window('Palabras').Layout(diseñoPalabras)
 
+
+
 while True:
 	event, values = ventanaPal.Read()
 	
@@ -45,17 +47,19 @@ while True:
 		finally:
 			print(strTipo)	
 		
+		
 		palTag = tag(values['palabra'])
 		
 		if strTipo == palTag[0][1]:
 			
 			#Usar la definición de Wiktionary si los dos coinciden en el tipo de palabra.
 			
+			
 		elif strTipo =! palTag[0][1]:
 		
 			#Usar definición de Wiktionary y hacer reporte de la diferencia de pattern.
-			#archivoReporte = open('reporte.txt, "w"')
-			#archivoReporte.write('Wiktionary y pattern no coinciden en la definición de tipo de la sig. palabra: ', values[palabra])
+			archivoReporte = open('reporte.txt, "w"')
+			archivoReporte.write('Wiktionary y pattern no coinciden en la definición de tipo de la sig. palabra: ', values[palabra])
 		elif strTipo == None and esValidaPattern(palTag[0][1]):
 		
 			#Ponerle definición a la palabra. Guardar definición en archivo local.
@@ -72,13 +76,13 @@ while True:
 			#		Desaparecer ventana anterior.
 			#		Si existe el archivo de definiciones, modificarlo, y si no, crearlo.
 			#		Agregar la definición nueva.
-			#	sg.Popup('Definición agregada')	
-			
+			#		sg.Popup('Definición agregada')	
+			#		break
 			#Agregar la palabra nueva a la lista de palabras de la sopa.
 			
 		else: #No se encuentra en ningun recurso
-			#No incluir y reportar.
-		
+			archivoReporte = open('reporte.txt', "w")
+			arhcivoReporte.write(values['palabra'] + ' no es una palabra válida para usar.')
 		print(palTag)
 		#Buscar la palabra en wiktionary junto con su tipo (adj, sus, verb.) done.
 		#Con pattern.es buscar el tipo de la palabra. done.
