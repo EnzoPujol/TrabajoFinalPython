@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from pattern.es import tag
 from pattern.web import Wiktionary
 import PySimpleGUI as sg
@@ -5,17 +7,44 @@ import string
 import json
 import os
 
+def ayuda():
+	diseñoAyuda = [[sg.Text('¿Desea ayuda?')],
+					[sg.Button('Solo Definicion'),sg.Button('Solo Palabras'),sg.Button('Definicion y Palabras'), sg.Button('No')]]
+	
+	ventanaAyuda = sg.Window('Ayuda').Layout(diseñoAyuda)
+	
+	while True:
+		event, values = ventanaAyuda.Read()
+		if event is None:
+			break
+		else:
+			return event
+def orientacion():
+	diseñoOrient = [[sg.Text('Elegir orientación de las palabras:')], [sg.Button('Horizontal'), sg.Button('Vertical')]]
+	ventanaOrient = sg.Window('Orientación').Layout(diseñoOrient)
+	
+	while True:
+		event, values = ventanaOrient.Read()
+		if event is None:
+			break
+		else:
+			return event
+def upperLower():
+	diseñoUL = [[sg.Text('Mayúsculas o minúsculas:')], [sg.Button('Mayúsculas'), sg.Button('Minúsculas')]]
+	ventanaUL = sg.Window('Orientación').Layout(diseñoOrient)
+	
+	while True:
+		event, values = ventanaUL.Read()
+		if event is None:
+			break
+		else:
+			return event
 #Recordar hacer def para no ejecutar solo
 archivoJson=open('config.json','w+')
-def esValidaPattern (tag):
-	aux = tag.split('')
-	if aux[0] in string.ascii_uppercase:
-		return True
-	else:
-		return False
+
 diseñoPalabras = [[sg.Text('Ingrese las palabra a buscar: ')],
 					[sg.In('', key='palabra')],
-					[sg.Submit('Agregar')]]
+					[sg.Submit('Agregar'), sg.Button('Siguiente')]]
 					
 ventanaPal = sg.Window('Palabras').Layout(diseñoPalabras)
 while True:
@@ -58,7 +87,7 @@ while True:
 			#Usar definición de Wiktionary y hacer reporte de la diferencia de pattern.
 			dic={}
 			dic['Palabra']=values['palabra']
-			dic['Definicion']=p
+			dic['Definicion']=p #Conseguir la df.
 			dic['Tipo']=palTag[0][1]
 			json.dump(dic,archivoJson,indent=4)
 			archivoReporte = open('reporte.txt', "w")
@@ -69,31 +98,59 @@ while True:
 			else:
 				archivoReporte = open('reporte.txt','w+')
 			arhcivoReporte.write(values['palabra'] + ' no es una palabra válida para usar.')
-			#Ponerle definición a la palabra. Guardar definición en archivo local.
-			
-			#diseñoDef = [[sg.Text('Parece ser que su palabra no es una conocida. Inserte una definición para la misma:')],
-			#			[sg.Input(), sg.Submit('Agregar def.')]]
-			
-			#ventanaDef = sg.Window('Agregar definición').Layout(diseñoDef)
-			
-			#while True:
-			#	evento, valores: ventanaDef.Read()
-			#	
-			#	if evento == 'Agregar def.':
-			#		Desaparecer ventana anterior.
-			#		Si existe el archivo de definiciones, modificarlo, y si no, crearlo.
-			#		Agregar la definición nueva.
-			#		sg.Popup('Definición agregada')	
-			#		break
-			#Agregar la palabra nueva a la lista de palabras de la sopa.
-			
-			
-		print(palTag)
-		#Buscar la palabra en wiktionary junto con su tipo (adj, sus, verb.) done.
-		#Con pattern.es buscar el tipo de la palabra. done.
-		#Comparar valores de verdad de ambas busquedas
-		#dependiendo de estos valores, actuar o elaborar reportes dependiendo al caso.
-		
-					
+	elif event == 'Siguiente':
+		break		
 
+coloresEN = ['yellow', 'red', 'blue', 'green', 'purple', 'light blue', 'orange', 'brown']
+coloresES = ['amarillo', 'rojo', 'azul', 'verde', 'violeta', 'celeste', 'naranja', 'marrón']
 
+diseñoColores = [[sg.Text('Ingrese los colores a utilizar:')],
+					[sg.In('', key='color')],[sg.Listbox(values=coloresES, size=(15,15), key='colores'), sg.Listbox(values=[], size=(15,15), key='colEleg')],
+					[sg.Button('Agregar color'), sg.Button('Quitar color'), sg.Button('Confirmar')]]
+
+ventanaColores = sg.Window('Elegir colores a usar').Layout(diseñoColores)
+
+coloresEN = ['yellow', 'red', 'blue', 'green', 'purple', 'light blue', 'orange', 'brown']
+coloresES = ['amarillo', 'rojo', 'azul', 'verde', 'violeta', 'celeste', 'naranja', 'marrón']
+
+coloresElegidos = []
+contCol = 0
+while True:
+	event, values = ventanaColores.Read()
+	if event is None:
+		break
+	elif event == 'Agregar color':
+		if values['color'] in coloresES and values['color'] not in coloresElegidos and contCol < 3:
+			coloresElegidos.append(values['color'])
+			ventanaColores.FindElement('colEleg').Update(coloresElegidos)
+			contCol +=1
+		elif values['color'] not in coloresES:
+			sg.Popup('Por favor, elija uno de los colores de la lista.')
+		elif values['color'] in coloresElegidos:
+			sg.Popup('El color ingresado ya se eligió previamente.')
+		elif contCol == 3:
+			sg.Popup('Máximo de colores alcanzado. Si quiere agregar otro, borre uno.')
+	elif event == 'Quitar color':
+		try:
+			indiceCol = coloresElegidos.index(values['color'])	
+		except ValueError:
+			sg.Popup('La lista de colores elegidos está vacía.')	
+		else:
+			del coloresElegidos[indiceCol]
+			contCol -=1
+			ventanaColores.FindElement('colEleg').Update(coloresElegidos)
+	elif event == 'Confirmar':
+		try:
+			colElegEnglish = []
+			for i in coloresElegidos:
+				indAux = coloresES.index(i)
+			
+				colElegEnglish.append(coloresEN[indAux])
+		except TypeError:
+			sg.Popup('No eligió ningún color.')
+		else:
+			archivoColores = open('coloresElegidos.txt', "w")
+			print(colElegEnglish)
+			archivoColores.write(str(colElegEnglish))	
+			archivoColores.close()			
+		break
