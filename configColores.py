@@ -2,25 +2,22 @@ from pattern.es import tag
 from pattern.web import Wiktionary
 import PySimpleGUI as sg
 import string
-#Recordar hacer def para no ejecutar solo
+import json
+import os
 
+#Recordar hacer def para no ejecutar solo
+archivoJson=open('config.json','w+')
 def esValidaPattern (tag):
-	
 	aux = tag.split('')
-	
 	if aux[0] in string.ascii_uppercase:
 		return True
 	else:
 		return False
-
 diseñoPalabras = [[sg.Text('Ingrese las palabra a buscar: ')],
 					[sg.In('', key='palabra')],
 					[sg.Submit('Agregar')]]
 					
 ventanaPal = sg.Window('Palabras').Layout(diseñoPalabras)
-
-
-
 while True:
 	event, values = ventanaPal.Read()
 	
@@ -33,7 +30,6 @@ while True:
 		try:
 			artic = p.plaintext().split('\n')
 			strNuevo = ' - '.join(artic)
-		
 			
 			if 'Sustantivo' in strNuevo:
 				strTipo = 'NN'
@@ -51,17 +47,28 @@ while True:
 		palTag = tag(values['palabra'])
 		
 		if strTipo == palTag[0][1]:
-			
 			#Usar la definición de Wiktionary si los dos coinciden en el tipo de palabra.
-			
-			
-		elif strTipo =! palTag[0][1]:
-		
+			dic={}
+			aux=p.plaintext()
+			dic['Palabra']=values['palabra']
+			dic['Definicion']=aux
+			dic['Tipo']=palTag[0][1]
+			json.dump(dic,archivoJson,indent=4)
+		elif strTipo != palTag[0][1]:
 			#Usar definición de Wiktionary y hacer reporte de la diferencia de pattern.
-			archivoReporte = open('reporte.txt, "w"')
-			archivoReporte.write('Wiktionary y pattern no coinciden en la definición de tipo de la sig. palabra: ', values[palabra])
-		elif strTipo == None and esValidaPattern(palTag[0][1]):
-		
+			dic={}
+			dic['Palabra']=values['palabra']
+			dic['Definicion']=p
+			dic['Tipo']=palTag[0][1]
+			json.dump(dic,archivoJson,indent=4)
+			archivoReporte = open('reporte.txt', "w")
+			archivoReporte.write('Wiktionary y pattern no coinciden en la definición de tipo de la sig. palabra: '+values['palabra'])
+		else:
+			if(os.path.exists(reporte.txt)):
+				archivoReporte = open('reporte.txt', 'r+')
+			else:
+				archivoReporte = open('reporte.txt','w+')
+			arhcivoReporte.write(values['palabra'] + ' no es una palabra válida para usar.')
 			#Ponerle definición a la palabra. Guardar definición en archivo local.
 			
 			#diseñoDef = [[sg.Text('Parece ser que su palabra no es una conocida. Inserte una definición para la misma:')],
@@ -80,9 +87,7 @@ while True:
 			#		break
 			#Agregar la palabra nueva a la lista de palabras de la sopa.
 			
-		else: #No se encuentra en ningun recurso
-			archivoReporte = open('reporte.txt', "w")
-			arhcivoReporte.write(values['palabra'] + ' no es una palabra válida para usar.')
+			
 		print(palTag)
 		#Buscar la palabra en wiktionary junto con su tipo (adj, sus, verb.) done.
 		#Con pattern.es buscar el tipo de la palabra. done.
