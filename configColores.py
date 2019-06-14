@@ -47,6 +47,8 @@ diseñoPalabras = [[sg.Text('Ingrese las palabra a buscar: ')],
 					[sg.Submit('Agregar'), sg.Button('Siguiente')]]
 					
 ventanaPal = sg.Window('Palabras').Layout(diseñoPalabras)
+
+listaJSONPal = []
 while True:
 	event, values = ventanaPal.Read()
 	
@@ -80,16 +82,17 @@ while True:
 			dic={}
 			aux=p.plaintext()
 			dic['Palabra']=values['palabra']
-			dic['Definicion']=aux
+			#dic['Definicion']=aux
 			dic['Tipo']=palTag[0][1]
-			json.dump(dic,archivoJson,indent=4)
+			#json.dump(dic,archivoJson,indent=4)
+			listaJSONPal.append(dic)
 		elif strTipo != palTag[0][1]:
 			#Usar definición de Wiktionary y hacer reporte de la diferencia de pattern.
 			dic={}
 			dic['Palabra']=values['palabra']
-			dic['Definicion']=p #Conseguir la df.
+			#dic['Definicion']=p #Conseguir la df.
 			dic['Tipo']=palTag[0][1]
-			json.dump(dic,archivoJson,indent=4)
+			listaJSONPal.append(dic)
 			archivoReporte = open('reporte.txt', "w")
 			archivoReporte.write('Wiktionary y pattern no coinciden en la definición de tipo de la sig. palabra: '+values['palabra'])
 		else:
@@ -100,6 +103,8 @@ while True:
 			arhcivoReporte.write(values['palabra'] + ' no es una palabra válida para usar.')
 	elif event == 'Siguiente':
 		break		
+
+json.dump(listaJSONPal, archivoJson, indent=4)
 
 coloresEN = ['yellow', 'red', 'blue', 'green', 'purple', 'light blue', 'orange', 'brown']
 coloresES = ['amarillo', 'rojo', 'azul', 'verde', 'violeta', 'celeste', 'naranja', 'marrón']
