@@ -1,18 +1,14 @@
 [
     {
-        "Palabra": "falacia",
+        "Palabra": "palabra",
         "Tipo": "NN"
     },
     {
-        "Palabra": "encefalograma",
+        "Palabra": "falacia",
         "Tipo": "NN"
     },
     {
         "Palabra": "correr",
         "Tipo": "VB"
-    },
-    {
-        "Palabra": "importante",
-        "Tipo": "JJ"
     }
 ]

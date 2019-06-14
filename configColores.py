@@ -31,7 +31,7 @@ def orientacion():
 			return event
 def upperLower():
 	diseñoUL = [[sg.Text('Mayúsculas o minúsculas:')], [sg.Button('Mayúsculas'), sg.Button('Minúsculas')]]
-	ventanaUL = sg.Window('Orientación').Layout(diseñoOrient)
+	ventanaUL = sg.Window('Orientación').Layout(diseñoUL)
 	
 	while True:
 		event, values = ventanaUL.Read()
