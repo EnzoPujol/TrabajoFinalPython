@@ -10,31 +10,40 @@ import random
 def crearFrameHorizontal(listaLetra,maxLong,tamLista):
 	frame_layout=[]
 	cont=0
+	largoAux=maxLong+5
 	for i in range(0,tamLista):
 		fila=[]
-		cantRandom=maxLong-len(listaLetra[i])
-		for x in range(1,len(listaLetra)):
-			numAux=0
-			print('entra')
-			if(cantRandom>0):
-				numAux=random.randint(1,cantRandom)
-				print(numAux)
-				for y in range(1,numAux):
-					print('entra')
-					boton=sg.Button(random.choice(string.ascii_lowercase),key=str(cont))
-					fila.append(boton)
-					cont=cont+1
-			for z in listaLetra[i]:
-				fila.append(sg.Button(z,key=str(cont)))
-				cont=cont+1
-			cantRest=cantRandom-numAux
-			for w in range(1,cantRest):
-				print('entra')
-				fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont)))
-				cont=cont+1
+		cantRandom=largoAux-len(listaLetra[i])
+		numAux=0
+		numAux=random.randint(1,cantRandom)
+		print(numAux)
+		for y in range(1,numAux + 1):
+			boton=sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(2,2))
+			fila.append(boton)
+			cont=cont+1
+		for z in listaLetra[i]:
+			fila.append(sg.Button(z,key=str(cont), size=(2,2)))
+			cont=cont+1
+		cantRest=cantRandom-numAux
+		for w in range(1,cantRest+1):
+			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(2,2)))
+			cont=cont+1
 		frame_layout.append(fila)
 	return frame_layout
-	
+
+def crearFrameVertical(frame_layout, maxLong):
+	frame_vert = []
+	largoAux=maxLong+5
+	for j in range(0,largoAux):
+			fila=[]
+			frame_vert.append(fila)
+	cont=0
+	for i in frame_layout:
+		for k in i:
+			frame_vert[cont]=k
+			cont+=1
+		cont=0 
+	return frame_vert
 
 archCol = open('coloresElegidos.txt', "r")
 archPal = open('config.json', "r")
@@ -56,7 +65,10 @@ print(listaLetra)
 
 
 layout=crearFrameHorizontal(listaLetra,maxLong,tamLista)
-ventana= sg.Window('Prueba').Layout(layout)
+layoutVert=crearFrameVertical(layout, maxLong)
+print(layoutVert)
+
+ventana= sg.Window('Prueba').Layout([layoutVert])
 while True:
 	event, values = ventana.Read()
 	if event== None:
