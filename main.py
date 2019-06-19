@@ -6,10 +6,11 @@ import random
 
 #orientacion=configColores.orientacion()
 #upperLower=configColores.upperLower()
-
+window_background_color = 'Black'
 archCol = open('coloresElegidos.txt', "r")
 archPal = open('config.json', "r")
 listaPal = json.load(archPal)
+
 
 def crearFrameHorizontal(listaLetra,maxLong,tamLista):
 	frame_layout=[]
@@ -20,22 +21,21 @@ def crearFrameHorizontal(listaLetra,maxLong,tamLista):
 		cantRandom=largoAux-len(listaLetra[i])
 		numAux=0
 		numAux=random.randint(1,cantRandom)
-		print(numAux)
 		for y in range(1,numAux + 1):
-			boton=sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2))
+			boton=sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2),button_color=('white','darkblue'))
 			fila.append(boton)
 			cont=cont+1
 		for z in listaLetra[i]:
-			fila.append(sg.Button(z,key=str(cont), size=(5,2)))
+			fila.append(sg.Button(z,key=str(cont), size=(5,2),button_color=('white','darkblue')))
 			cont=cont+1
 		cantRest=cantRandom-numAux
 		for w in range(1,cantRest+1):
-			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2)))
+			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2),button_color=('white','darkblue')))
 			cont=cont+1
 		frame_layout.append(fila)
 		fila=[]
 		for h in range(0,largoAux):
-			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2)))
+			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2),button_color=('white','darkblue')))
 			cont=cont+1
 		frame_layout.append(fila)
 	return frame_layout
@@ -94,15 +94,47 @@ num_columna=0
 for z in listaAux1:
 	palabra_columna[num_columna]=z
 	num_columna=num_columna+2
-print(palabra_columna)
 
-layout=crearFrameHorizontal(listaLetra,maxLong,tamLista)
+
+
+sopa=crearFrameHorizontal(listaLetra,maxLong,tamLista)
+boton_aux=sg.Button('Confirmar')
+lista_botones=[]
+lista_botones.append(boton_aux)
+boton_aux=sg.Button('salir')
+lista_botones.append(boton_aux)
+sopa.append(lista_botones)
+listaFin=[]
+lista_Keys=[]
+layout=sopa	
 #layout =  crearFrameVertical(palabra_columna,palabra_fila)
-
+sg.ChangeLookAndFeel(window_background_color)
 ventana= sg.Window('Prueba').Layout(layout)
 while True:
 	event, values = ventana.Read()
-	if event== None:
+	if event== None or 'salir':
 		break
+	if event=='Confirmar':
+		palabra=''
+		palabra=palabra.join(listaFin)
+		print(palabra)
+		if palabra in listaAux1:
+			sg.Popup('Palabra correcta')
+			listaFin=[]
+			lista_Keys=[]
+		else:
+			sg.Popup('Palabra incorrecta')
+			listaFin=[]
+			lista_Keys=[]
 	else:
-		print (event)
+		ventana.FindElement(event).Update(button_color=('white', 'green'))
+		listaFin.append(ventana.FindElement(event).ButtonText)
+		if event in lista_Keys:
+			ventana.FindElement(event).Update(button_color=('white', 'darkblue'))
+			print(ventana.FindElement(event).ButtonText)
+			listaFin.remove(ventana.FindElement(event).ButtonText)
+			print(listaFin)
+		else:
+			lista_Keys.append(event)
+		
+		

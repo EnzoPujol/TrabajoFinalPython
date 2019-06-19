@@ -117,7 +117,8 @@ ventanaColores = sg.Window('Elegir colores a usar').Layout(diseñoColores)
 
 coloresEN = ['yellow', 'red', 'blue', 'green', 'purple', 'light blue', 'orange', 'brown']
 coloresES = ['amarillo', 'rojo', 'azul', 'verde', 'violeta', 'celeste', 'naranja', 'marrón']
-
+dicAux={}
+listaJson=[]
 coloresElegidos = []
 contCol = 0
 while True:
@@ -149,13 +150,18 @@ while True:
 			colElegEnglish = []
 			for i in coloresElegidos:
 				indAux = coloresES.index(i)
-			
 				colElegEnglish.append(coloresEN[indAux])
+			print(colElegEnglish)
+			for x in colElegEnglish:
+				print(x)
+				dicAux['colour']=x
+				listaJson.append(dicAux)
+				dicAux={}
 		except TypeError:
 			sg.Popup('No eligió ningún color.')
 		else:
 			archivoColores = open('coloresElegidos.txt', "w")
-			print(colElegEnglish)
 			archivoColores.write(str(colElegEnglish))	
-			archivoColores.close()			
+			archivoColores.close()	
+			print(listaJson)		
 		break
