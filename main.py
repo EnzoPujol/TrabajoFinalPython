@@ -7,6 +7,10 @@ import random
 #orientacion=configColores.orientacion()
 #upperLower=configColores.upperLower()
 
+archCol = open('coloresElegidos.txt', "r")
+archPal = open('config.json', "r")
+listaPal = json.load(archPal)
+
 def crearFrameHorizontal(listaLetra,maxLong,tamLista):
 	frame_layout=[]
 	cont=0
@@ -18,36 +22,54 @@ def crearFrameHorizontal(listaLetra,maxLong,tamLista):
 		numAux=random.randint(1,cantRandom)
 		print(numAux)
 		for y in range(1,numAux + 1):
-			boton=sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(2,2))
+			boton=sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2))
 			fila.append(boton)
 			cont=cont+1
 		for z in listaLetra[i]:
-			fila.append(sg.Button(z,key=str(cont), size=(2,2)))
+			fila.append(sg.Button(z,key=str(cont), size=(5,2)))
 			cont=cont+1
 		cantRest=cantRandom-numAux
 		for w in range(1,cantRest+1):
-			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(2,2)))
+			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2)))
+			cont=cont+1
+		frame_layout.append(fila)
+		fila=[]
+		for h in range(0,largoAux):
+			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2)))
 			cont=cont+1
 		frame_layout.append(fila)
 	return frame_layout
 
-def crearFrameVertical(frame_layout, maxLong):
-	frame_vert = []
-	largoAux=maxLong+5
-	for j in range(0,largoAux):
-			fila=[]
-			frame_vert.append(fila)
-	cont=0
-	for i in frame_layout:
-		for k in i:
-			frame_vert[cont]=k
-			cont+=1
-		cont=0 
-	return frame_vert
+def boton(nombre,tam=(5,2),color=('white','green'),clave=''):
+    if clave != '':
+        return sg.Button(nombre, size=tam ,button_color=color,key=clave)
+    else:
+        return sg.Button(nombre, size=tam ,button_color=color)
 
-archCol = open('coloresElegidos.txt', "r")
-archPal = open('config.json', "r")
-listaPal = json.load(archPal)
+def crearFrameVertical(palabra_columna,palabra_fila):
+		cantidad_total_filas=10
+		cantidad_total_columnas=10
+		lista_final=[]
+		posicion=0
+		for fila in range(cantidad_total_filas):
+			fila_actual=[]
+			for columna in range(cantidad_total_filas):
+				#evaluo si es que estoy en una columna de donde pertenece la palabra, caso contrario agrego el boton con el numero, en su caso es una letra random
+				if columna in palabra_columna.keys():
+					#evaluo si es que estoy en la fila correspondiente de donde puedo arrancar, caso contrario agrego el boton del numero, en su caso es una letra random
+						if palabra_fila[palabra_columna[columna]] <= fila:
+								#posicion va a ser la variable la cual indique por cual letra esta yendo por fila
+								posicion=fila-palabra_fila[palabra_columna[columna]]
+								# aca agrego el boton con la letra correspondiente o un numero, que vendria a ser una letra aleatoria en su caso
+								fila_actual.append(boton(palabra_columna[columna][posicion],color=('white','red')) if len(palabra_columna[columna])-1 >= posicion  else boton(random.choice(string.ascii_lowercase)))
+						else:
+								fila_actual.append(boton(random.choice(string.ascii_lowercase)))
+				else:
+					fila_actual.append(boton(random.choice(string.ascii_lowercase)))
+			lista_final.append(fila_actual.copy()) 
+		return lista_final
+
+
 
 listaAux1 = []
 for i in listaPal:
@@ -61,14 +83,23 @@ listaLetra= []
 for i in listaAux1:
 	palabraSplit=list(i)
 	listaLetra.append(palabraSplit)
-print(listaLetra)
 
+palabra_columna={}
+palabra_fila={}
+num_fila=0
+for i in listaAux1:
+	palabra_fila[i]=num_fila
+	num_fila=num_fila+2
+num_columna=0
+for z in listaAux1:
+	palabra_columna[num_columna]=z
+	num_columna=num_columna+2
+print(palabra_columna)
 
 layout=crearFrameHorizontal(listaLetra,maxLong,tamLista)
-layoutVert=crearFrameVertical(layout, maxLong)
-print(layoutVert)
+#layout =  crearFrameVertical(palabra_columna,palabra_fila)
 
-ventana= sg.Window('Prueba').Layout([layoutVert])
+ventana= sg.Window('Prueba').Layout(layout)
 while True:
 	event, values = ventana.Read()
 	if event== None:
