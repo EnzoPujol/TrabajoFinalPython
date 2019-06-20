@@ -7,7 +7,7 @@ import random
 #orientacion=configColores.orientacion()
 #upperLower=configColores.upperLower()
 window_background_color = 'Black'
-archCol = open('coloresElegidos.txt', "r")
+archCol = open('coloresElegidos.json', "r")
 archPal = open('config.json', "r")
 listaPal = json.load(archPal)
 
@@ -80,6 +80,7 @@ tamLista=len(listaPal)
 
 listaLetra= []
 
+
 for i in listaAux1:
 	palabraSplit=list(i)
 	listaLetra.append(palabraSplit)
@@ -96,12 +97,31 @@ for z in listaAux1:
 	num_columna=num_columna+2
 
 
+	
 
 sopa=crearFrameHorizontal(listaLetra,maxLong,tamLista)
+
+listaColores= json.load(archCol)
+print(listaColores)
+lista_botones_col = []
+for elem in listaColores:
+
+	if elem['Tipo'] == 'NN':
+		boton=sg.Button('Sustantivo', button_color=('white', elem['Color']))
+		lista_botones_col.append(boton)
+	elif elem['Tipo'] == 'JJ':
+		boton=sg.Button('Adjetivo', button_color=('white', elem['Color']))
+		lista_botones_col.append(boton)
+	else:
+		boton=sg.Button('Verbo', button_color=('white', elem['Color']))
+		lista_botones_col.append(boton)
+
+sopa.append(lista_botones_col)		
+
 boton_aux=sg.Button('Confirmar')
 lista_botones=[]
 lista_botones.append(boton_aux)
-boton_aux=sg.Button('salir')
+boton_aux=sg.Button('Salir')
 lista_botones.append(boton_aux)
 sopa.append(lista_botones)
 listaFin=[]
@@ -110,31 +130,61 @@ layout=sopa
 #layout =  crearFrameVertical(palabra_columna,palabra_fila)
 sg.ChangeLookAndFeel(window_background_color)
 ventana= sg.Window('Prueba').Layout(layout)
+colorBoton=''
+tipoPal=''
 while True:
 	event, values = ventana.Read()
-	if event== None or 'salir':
+	if event is None or event == 'Salir':
 		break
-	if event=='Confirmar':
+	elif event == 'Confirmar':
 		palabra=''
-		palabra=palabra.join(listaFin)
+		for tupla in listaFin:
+			palabra=palabra+tupla[0]
 		print(palabra)
+		ok=True
 		if palabra in listaAux1:
-			sg.Popup('Palabra correcta')
-			listaFin=[]
-			lista_Keys=[]
+			for elem in listaPal:
+				if elem['Palabra'] == palabra and tipoPal == elem['Tipo']:
+					sg.Popup('Palabra correcta')
+					listaFin=[]
+					lista_Keys=[]
+					ok=True
+					break
+				else:
+					ok=False
+			print(ok)
+			if ok == False:
+				sg.Popup('Palabra incorrecta')
+				for tupla in listaFin:
+					ventana.FindElement(tupla[1]).Update(button_color=('black', 'darkblue'))
+				listaFin=[]
+				lista_Keys=[]
+				ok=True
 		else:
 			sg.Popup('Palabra incorrecta')
+			for tupla in listaFin:
+				ventana.FindElement(tupla[1]).Update(button_color=('black', 'darkblue'))
 			listaFin=[]
 			lista_Keys=[]
+	elif event == 'Sustantivo':
+		colorBoton=listaColores[0]['Color']
+		tipoPal=listaColores[0]['Tipo']
+	elif event == 'Adjetivo':
+		colorBoton=listaColores[1]['Color']
+		tipoPal=listaColores[1]['Tipo']
+	elif event == 'Verbo':
+		colorBoton=listaColores[2]['Color']	
+		tipoPal=listaColores[2]['Tipo']	
 	else:
-		ventana.FindElement(event).Update(button_color=('white', 'green'))
-		listaFin.append(ventana.FindElement(event).ButtonText)
-		if event in lista_Keys:
-			ventana.FindElement(event).Update(button_color=('white', 'darkblue'))
-			print(ventana.FindElement(event).ButtonText)
-			listaFin.remove(ventana.FindElement(event).ButtonText)
-			print(listaFin)
-		else:
-			lista_Keys.append(event)
+		ventana.FindElement(event).Update(button_color=('black', colorBoton))
+		auxLetra = (ventana.FindElement(event).ButtonText, event)
+		if auxLetra not in listaFin:
+			listaFin.append(auxLetra)
+		else: 
+			for tupla in listaFin:
+				if event == tupla[1]:
+					ventana.FindElement(event).Update(button_color=('black', 'darkblue'))
+					listaFin.pop(listaFin.index(tupla))
+		print(listaFin)	
 		
 		

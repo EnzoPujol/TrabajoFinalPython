@@ -1,1 +1,14 @@
-[]
+[
+    {
+        "Palabra": "palabra",
+        "Tipo": "NN"
+    },
+    {
+        "Palabra": "falacia",
+        "Tipo": "NN"
+    },
+    {
+        "Palabra": "correr",
+        "Tipo": "VB"
+    }
+]

@@ -39,6 +39,28 @@ def upperLower():
 			break
 		else:
 			return event
+			
+def fuente():
+	fuentes = ['Helvetica', 'Verdana', 'Times', 'Fixedsys', 'Arial', 'Courier', 'Comic']
+	
+	layoutFuente = [[sg.Text('Elija una de las fuentes disponibles:')],
+					[sg.In('', key='fuente')],[sg.Listbox(values=fuentes, size=(15,15), key='fuentes')],
+					[sg.Button('Confirmar')]]
+					
+	ventanaFuente = sg.Window('Elegir fuente').Layout(layoutFuente)
+	
+	while True:
+		event, values = ventanaFuente.Read()
+		if event is None:
+			break
+		if event == 'Confirmar':
+			fuente = values['fuente'].lower()
+			fuente = fuente.capitalize()
+			if fuente in fuentes:
+				return fuente
+			else:
+				sg.Popup('Por favor, elija una de las fuentes disponibles.')	
+	
 #Recordar hacer def para no ejecutar solo
 archivoJson=open('config.json','w+')
 
@@ -109,7 +131,7 @@ json.dump(listaJSONPal, archivoJson, indent=4)
 coloresEN = ['yellow', 'red', 'blue', 'green', 'purple', 'light blue', 'orange', 'brown']
 coloresES = ['amarillo', 'rojo', 'azul', 'verde', 'violeta', 'celeste', 'naranja', 'marrón']
 
-diseñoColores = [[sg.Text('Ingrese los colores a utilizar:')],
+diseñoColores = [[sg.Text('Ingrese los colores a utilizar:')],[sg.Text('(Elija color para sustantivo, adjetivo y verbo en orden.)')],
 					[sg.In('', key='color')],[sg.Listbox(values=coloresES, size=(15,15), key='colores'), sg.Listbox(values=[], size=(15,15), key='colEleg')],
 					[sg.Button('Agregar color'), sg.Button('Quitar color'), sg.Button('Confirmar')]]
 
@@ -117,16 +139,18 @@ ventanaColores = sg.Window('Elegir colores a usar').Layout(diseñoColores)
 
 coloresEN = ['yellow', 'red', 'blue', 'green', 'purple', 'light blue', 'orange', 'brown']
 coloresES = ['amarillo', 'rojo', 'azul', 'verde', 'violeta', 'celeste', 'naranja', 'marrón']
-dicAux={}
+
+
 listaJson=[]
 coloresElegidos = []
 contCol = 0
+
 while True:
 	event, values = ventanaColores.Read()
 	if event is None:
 		break
 	elif event == 'Agregar color':
-		if values['color'] in coloresES and values['color'] not in coloresElegidos and contCol < 3:
+		if values['color'] in coloresES and values['color'] not in coloresElegidos and contCol < 3: 
 			coloresElegidos.append(values['color'])
 			ventanaColores.FindElement('colEleg').Update(coloresElegidos)
 			contCol +=1
@@ -152,16 +176,25 @@ while True:
 				indAux = coloresES.index(i)
 				colElegEnglish.append(coloresEN[indAux])
 			print(colElegEnglish)
+			cont=0
 			for x in colElegEnglish:
+				dicColor = {}
+				dicColor['Color'] = x
+				if cont == 0:
+					dicColor['Tipo'] = 'NN'
+				elif cont == 1:
+					dicColor['Tipo'] = 'JJ'
+				else:
+					dicColor['Tipo'] = 'VB'
 				print(x)
-				dicAux['colour']=x
-				listaJson.append(dicAux)
-				dicAux={}
+				listaJson.append(dicColor)
+				cont+=1
 		except TypeError:
 			sg.Popup('No eligió ningún color.')
 		else:
-			archivoColores = open('coloresElegidos.txt', "w")
-			archivoColores.write(str(colElegEnglish))	
+			archivoColores = open('coloresElegidos.json', "w")
+			json.dump(listaJson, archivoColores)	
 			archivoColores.close()	
 			print(listaJson)		
 		break
+
