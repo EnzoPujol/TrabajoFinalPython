@@ -2,17 +2,24 @@ import PySimpleGUI as sg
 import json
 import string
 import random
-#import configColores
 
-#orientacion=configColores.orientacion()
-#upperLower=configColores.upperLower()
+
+
 window_background_color = 'Black'
 archCol = open('coloresElegidos.json', "r")
 archPal = open('config.json', "r")
+archConfigMisc = open('configMisc.json', "r")
+listaAyuda = json.load(archConfigMisc)
 listaPal = json.load(archPal)
 
+def MayusMinus(opcion):
+	
+	if opcion == 'Mayúsculas':
+		return string.ascii_uppercase
+	else:
+		return string.ascii_lowercase
 
-def crearFrameHorizontal(listaLetra,maxLong,tamLista):
+def crearFrameHorizontal(listaLetra,maxLong,tamLista, fuente):
 	frame_layout=[]
 	cont=0
 	largoAux=maxLong+5
@@ -22,20 +29,20 @@ def crearFrameHorizontal(listaLetra,maxLong,tamLista):
 		numAux=0
 		numAux=random.randint(1,cantRandom)
 		for y in range(1,numAux + 1):
-			boton=sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2),button_color=('white','darkblue'))
+			boton=sg.Button(random.choice(MayusMinus(listaAyuda[0]['MayusMinus'])),key=str(cont), size=(5,2),button_color=('white','darkblue'), font=(fuente))
 			fila.append(boton)
 			cont=cont+1
 		for z in listaLetra[i]:
-			fila.append(sg.Button(z,key=str(cont), size=(5,2),button_color=('white','darkblue')))
+			fila.append(sg.Button(z,key=str(cont), size=(5,2),button_color=('white','darkblue'),  font=(fuente)))
 			cont=cont+1
 		cantRest=cantRandom-numAux
 		for w in range(1,cantRest+1):
-			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2),button_color=('white','darkblue')))
+			fila.append(sg.Button(random.choice(MayusMinus(listaAyuda[0]['MayusMinus'])),key=str(cont), size=(5,2),button_color=('white','darkblue'),  font=(fuente)))
 			cont=cont+1
 		frame_layout.append(fila)
 		fila=[]
 		for h in range(0,largoAux):
-			fila.append(sg.Button(random.choice(string.ascii_lowercase),key=str(cont), size=(5,2),button_color=('white','darkblue')))
+			fila.append(sg.Button(random.choice(MayusMinus(listaAyuda[0]['MayusMinus'])),key=str(cont), size=(5,2),button_color=('white','darkblue'),  font=(fuente)))
 			cont=cont+1
 		frame_layout.append(fila)
 	return frame_layout
@@ -43,9 +50,9 @@ def crearFrameHorizontal(listaLetra,maxLong,tamLista):
 
 
 
-def crearFrameVertical(palabra_columna,palabra_fila):
-		cantidad_total_filas=10
-		cantidad_total_columnas=10
+def crearFrameVertical(palabra_columna,palabra_fila, cantPalabras, maxLong, fuente):
+		cantidad_total_filas=maxLong+2
+		cantidad_total_columnas=cantPalabras*2
 		lista_final=[]
 		posicion=0
 		keyAux=0
@@ -59,13 +66,13 @@ def crearFrameVertical(palabra_columna,palabra_fila):
 								#posicion va a ser la variable la cual indique por cual letra esta yendo por fila
 								posicion=fila-palabra_fila[palabra_columna[columna]]
 								# aca agrego el boton con la letra correspondiente o un numero, que vendria a ser una letra aleatoria en su caso
-								fila_actual.append(sg.Button(palabra_columna[columna][posicion],key=str(keyAux), size=(5,2),button_color=('white','darkblue')) if len(palabra_columna[columna])-1 >= posicion  else sg.Button(random.choice(string.ascii_lowercase),key=str(keyAux), size=(5,2),button_color=('white','darkblue')))
+								fila_actual.append(sg.Button(palabra_columna[columna][posicion],key=str(keyAux), size=(5,2),button_color=('white','darkblue'), font=(fuente)) if len(palabra_columna[columna])-1 >= posicion  else sg.Button(random.choice(MayusMinus(listaAyuda[0]['MayusMinus'])),key=str(keyAux), size=(5,2),button_color=('white','darkblue')))
 								keyAux=keyAux+1
 						else:
-								fila_actual.append(sg.Button(random.choice(string.ascii_lowercase),key=str(keyAux), size=(5,2),button_color=('white','darkblue')))
+								fila_actual.append(sg.Button(random.choice(MayusMinus(listaAyuda[0]['MayusMinus'])),key=str(keyAux), size=(5,2),button_color=('white','darkblue'), font=(fuente)))
 								keyAux=keyAux+1
 				else:
-					fila_actual.append(sg.Button(random.choice(string.ascii_lowercase),key=str(keyAux), size=(5,2),button_color=('white','darkblue')))
+					fila_actual.append(sg.Button(random.choice(MayusMinus(listaAyuda[0]['MayusMinus'])),key=str(keyAux), size=(5,2),button_color=('white','darkblue'),  font=(fuente)))
 					keyAux=keyAux+1
 			lista_final.append(fila_actual.copy()) 
 		return lista_final
@@ -84,17 +91,28 @@ listaLetra= []
 
 for i in listaAux1:
 	palabraSplit=list(i)
-	listaLetra.append(palabraSplit)
+	if listaAyuda[0]['MayusMinus'] == 'Mayúsculas':
+		palabraSplit = list(map(lambda x: x.upper(), palabraSplit))
+		print(palabraSplit)
+		listaLetra.append(palabraSplit)
+	else:
+		listaLetra.append(palabraSplit)
 
 palabra_columna={}
 palabra_fila={}
 num_fila=0
 for i in listaAux1:
-	palabra_fila[i]=num_fila
-	num_fila=num_fila+2
+	if listaAyuda[0]['MayusMinus'] == 'Mayúsculas':
+		palabra_fila[i.upper()]=num_fila
+	else:
+		palabra_fila[i]=num_fila
+	#num_fila=num_fila+2
 num_columna=0
 for z in listaAux1:
-	palabra_columna[num_columna]=z
+	if listaAyuda[0]['MayusMinus'] == 'Mayúsculas':
+		palabra_columna[num_columna]=z.upper()
+	else:
+		palabra_columna[num_columna]=z
 	num_columna=num_columna+2
 
 
@@ -105,31 +123,39 @@ listaColores= json.load(archCol)
 lista_botones_col = []
 for elem in listaColores:
 	if elem['Tipo'] == 'NN':
-		boton_aux1=sg.Button('Sustantivo', button_color=('white', elem['Color']))
+		boton_aux1=sg.Button('Sustantivo', button_color=('black', elem['Color']))
 		lista_botones_col.append(boton_aux1)
 	elif elem['Tipo'] == 'JJ':
-		boton_aux2=sg.Button('Adjetivo', button_color=('white', elem['Color']))
+		boton_aux2=sg.Button('Adjetivo', button_color=('black', elem['Color']))
 		lista_botones_col.append(boton_aux2)
 	else:
-		boton_aux3=sg.Button('Verbo', button_color=('white', elem['Color']))
+		boton_aux3=sg.Button('Verbo', button_color=('black', elem['Color']))
 		lista_botones_col.append(boton_aux3)
 
+boton_aux=sg.Button('Confirmar')
+lista_botones_col.append(boton_aux)
+if listaAyuda[0]['Ayuda'] != 'No':
+	boton_aux=sg.Button('Mostrar Ayuda')
+	lista_botones_col.append(boton_aux)
+boton_aux=sg.Button('Salir')
+lista_botones_col.append(boton_aux)
+boton_aux=sg.Button('Mostrar Ayuda')
 
 listaFin=[]
 lista_Keys=[]
-#layout= crearFrameVertical(palabra_columna,palabra_fila)
-layout=crearFrameHorizontal(listaLetra,maxLong,tamLista)
+
+if listaAyuda[0]['Orientación'] == 'Horizontal':
+	layout=crearFrameHorizontal(listaLetra,maxLong,tamLista, listaAyuda[0]['Fuente'])
+else:
+	layout= crearFrameVertical(palabra_columna,palabra_fila, tamLista, maxLong, listaAyuda[0]['Fuente'])
+
 layout.append(lista_botones_col)		
-boton_aux=sg.Button('Confirmar')
-lista_botones=[]
-lista_botones.append(boton_aux)
-boton_aux=sg.Button('Salir')
-lista_botones.append(boton_aux)
-layout.append(lista_botones)
+
 sg.ChangeLookAndFeel(window_background_color)
 ventana= sg.Window('Prueba').Layout(layout)
 colorBoton=''
 tipoPal=''
+contJuego=0
 while True:
 	event, values = ventana.Read()
 	if event is None or event == 'Salir':
@@ -147,6 +173,10 @@ while True:
 					listaFin=[]
 					lista_Keys=[]
 					ok=True
+					contJuego+=1
+					if contJuego == tamLista:
+						sg.Popup('Ganaste! Felicitaciones!')
+						exit(0)
 					break
 				else:
 					ok=False
@@ -171,7 +201,29 @@ while True:
 		tipoPal=listaColores[1]['Tipo']
 	elif event == 'Verbo':
 		colorBoton=listaColores[2]['Color']	
-		tipoPal=listaColores[2]['Tipo']	
+		tipoPal=listaColores[2]['Tipo']
+	elif event == 'Mostrar Ayuda':
+		listaUsoAyuda= []
+		if listaAyuda[0]['Ayuda'] == 'Solo Definicion':
+			for elem in listaPal:
+				listaUsoAyuda.append(elem['Definicion'])
+		elif listaAyuda[0]['Ayuda'] == 'Solo Palabras':
+			for elem in listaPal:
+				listaUsoAyuda.append(elem['Palabra'])
+		else:
+			for elem in listaPal:
+				strAyuda = elem['Palabra'] + ': ' + elem['Definicion']
+				listaUsoAyuda.append(strAyuda)
+		
+		layoutAyuda = [[sg.Listbox(values=listaUsoAyuda, size=(80,20))]]
+		ventanaAyuda = sg.Window('Ayuda').Layout(layoutAyuda)
+		
+		while True:
+			event, values = ventanaAyuda.Read()
+			if event is None:
+				break
+			
+			
 	else:
 		print(event)
 		ventana.FindElement(event).Update(button_color=('black', colorBoton))

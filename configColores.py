@@ -7,6 +7,9 @@ import string
 import json
 import os
 
+dic_configMisc={}
+
+
 def ayuda():
 	diseñoAyuda = [[sg.Text('¿Desea ayuda?')],
 					[sg.Button('Solo Definicion'),sg.Button('Solo Palabras'),sg.Button('Definicion y Palabras'), sg.Button('No')]]
@@ -60,8 +63,23 @@ def fuente():
 				return fuente
 			else:
 				sg.Popup('Por favor, elija una de las fuentes disponibles.')	
+def cantTipos():
+	
+	layoutCant = [[sg.Text('Ingrese cantidad de sustantivos, adjetivos y verbos en orden, separados por coma:')], [sg.Input('', size=(5,5))], [sg.Button('Confirmar')]]
+	
+	ventanaCant = sg.Window('Cantidad de palabras').Layout(layoutCant)
+	
+	while True:
+		event, values = ventanaCant.Read()
+		if event is None:
+			break
+		elif event == 'Confirmar':
+			return values[0].split(',')
+
 	
 #Recordar hacer def para no ejecutar solo
+listaCantPal = cantTipos()
+print(listaCantPal)
 archivoJson=open('config.json','w+')
 
 diseñoPalabras = [[sg.Text('Ingrese las palabra a buscar: ')],
@@ -71,6 +89,10 @@ diseñoPalabras = [[sg.Text('Ingrese las palabra a buscar: ')],
 ventanaPal = sg.Window('Palabras').Layout(diseñoPalabras)
 
 listaJSONPal = []
+strDef = ''
+listaCantPal = cantTipos()
+print(listaCantPal)
+contSustantivos, contAdjetivos, contVerbos = 0,0,0
 while True:
 	event, values = ventanaPal.Read()
 	
@@ -94,7 +116,15 @@ while True:
 			sg.Popup('La palabra no existe.')
 			strTipo = None
 		finally:
-			print(strTipo)	
+			print(strTipo)
+		
+		strDef = strNuevo.split('- 1')
+		strDef = strDef[1].split('2')
+		if '-' in strDef[0]:
+			strDef = strDef[0].split('-')
+			strDef = strDef[0]
+		else:
+			strDef = strDef[0]
 		
 		
 		palTag = tag(values['palabra'])
@@ -102,19 +132,39 @@ while True:
 		if strTipo == palTag[0][1]:
 			#Usar la definición de Wiktionary si los dos coinciden en el tipo de palabra.
 			dic={}
-			aux=p.plaintext()
 			dic['Palabra']=values['palabra']
-			#dic['Definicion']=aux
+			dic['Definicion']=strDef
 			dic['Tipo']=palTag[0][1]
-			#json.dump(dic,archivoJson,indent=4)
-			listaJSONPal.append(dic)
+			if strTipo == 'NN':
+				if contSustantivos < int(listaCantPal[0]):
+					listaJSONPal.append(dic)
+					contSustantivos+=1
+			if strTipo == 'JJ':
+				if contAdjetivos < int(listaCantPal[1]):
+					listaJSONPal.append(dic)
+					contAdjetivos+=1
+			if strTipo == 'VB':
+				if contVerbos < int(listaCantPal[2]):
+					listaJSONPal.append(dic)
+					contVerbos+=1
 		elif strTipo != palTag[0][1]:
 			#Usar definición de Wiktionary y hacer reporte de la diferencia de pattern.
 			dic={}
 			dic['Palabra']=values['palabra']
-			#dic['Definicion']=p #Conseguir la df.
+			dic['Definicion']=strDef
 			dic['Tipo']=palTag[0][1]
-			listaJSONPal.append(dic)
+			if strTipo == 'NN':
+				if contSustantivos < int(listaCantPal[0]):
+					listaJSONPal.append(dic)
+					contSustantivos+=1
+			if strTipo == 'JJ':
+				if contAdjetivos < int(listaCantPal[1]):
+					listaJSONPal.append(dic)
+					contAdjetivos+=1
+			if strTipo == 'VB':
+				if contVerbos < int(listaCantPal[2]):
+					listaJSONPal.append(dic)
+					contVerbos+=1
 			archivoReporte = open('reporte.txt', "w")
 			archivoReporte.write('Wiktionary y pattern no coinciden en la definición de tipo de la sig. palabra: '+values['palabra'])
 		else:
@@ -126,7 +176,7 @@ while True:
 	elif event == 'Siguiente':
 		break		
 
-json.dump(listaJSONPal, archivoJson, indent=4)
+json.dump(listaJSONPal, archivoJson, ensure_ascii=False, indent=4)
 
 coloresEN = ['yellow', 'red', 'blue', 'green', 'purple', 'light blue', 'orange', 'brown']
 coloresES = ['amarillo', 'rojo', 'azul', 'verde', 'violeta', 'celeste', 'naranja', 'marrón']
@@ -198,3 +248,12 @@ while True:
 			print(listaJson)		
 		break
 
+dic_configMisc['Ayuda'] = ayuda()
+dic_configMisc['Fuente'] = fuente()
+dic_configMisc['Orientación'] = orientacion()
+dic_configMisc['MayusMinus'] = upperLower()
+
+archConfigMisc = open('configMisc.json', "w")
+listaJSONMisc = []
+listaJSONMisc.append(dic_configMisc)
+json.dump(listaJSONMisc, archConfigMisc, ensure_ascii=False, indent=4)
