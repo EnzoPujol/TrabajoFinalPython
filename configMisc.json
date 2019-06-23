@@ -1,8 +1,8 @@
 [
     {
-        "Ayuda": "Definicion y Palabras",
-        "Fuente": "Comic",
-        "Orientación": "Vertical",
+        "Ayuda": "Solo Definicion",
+        "Fuente": "Times",
+        "Orientación": "Horizontal",
         "MayusMinus": "Minúsculas"
     }
 ]

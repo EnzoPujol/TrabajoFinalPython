@@ -59,14 +59,10 @@ def crearFrameVertical(palabra_columna,palabra_fila, cantPalabras, maxLong, fuen
 		for fila in range(cantidad_total_filas):
 			fila_actual=[]
 			for columna in range(cantidad_total_filas):
-				#evaluo si es que estoy en una columna de donde pertenece la palabra, caso contrario agrego el boton con el numero, en su caso es una letra random
 				if columna in palabra_columna.keys():
-					#evaluo si es que estoy en la fila correspondiente de donde puedo arrancar, caso contrario agrego el boton del numero, en su caso es una letra random
 						if palabra_fila[palabra_columna[columna]] <= fila:
-								#posicion va a ser la variable la cual indique por cual letra esta yendo por fila
 								posicion=fila-palabra_fila[palabra_columna[columna]]
-								# aca agrego el boton con la letra correspondiente o un numero, que vendria a ser una letra aleatoria en su caso
-								fila_actual.append(sg.Button(palabra_columna[columna][posicion],key=str(keyAux), size=(5,2),button_color=('white','darkblue'), font=(fuente)) if len(palabra_columna[columna])-1 >= posicion  else sg.Button(random.choice(MayusMinus(listaAyuda[0]['MayusMinus'])),key=str(keyAux), size=(5,2),button_color=('white','darkblue')))
+								fila_actual.append(sg.Button(palabra_columna[columna][posicion],key=str(keyAux), size=(5,2),button_color=('white','darkblue'), font=(fuente)) if len(palabra_columna[columna])-1 >= posicion  else sg.Button(random.choice(MayusMinus(listaAyuda[0]['MayusMinus'])),key=str(keyAux), size=(5,2),button_color=('white','darkblue'), font=(fuente)))
 								keyAux=keyAux+1
 						else:
 								fila_actual.append(sg.Button(random.choice(MayusMinus(listaAyuda[0]['MayusMinus'])),key=str(keyAux), size=(5,2),button_color=('white','darkblue'), font=(fuente)))
@@ -164,6 +160,7 @@ while True:
 		palabra=''
 		for tupla in listaFin:
 			palabra=palabra+tupla[0]
+		palabra=palabra.lower()
 		print(palabra)
 		ok=True
 		if palabra in listaAux1:
@@ -181,6 +178,8 @@ while True:
 				else:
 					ok=False
 			if ok == False:
+				print('1')
+				print(ok)
 				sg.Popup('Palabra incorrecta')
 				for tupla in listaFin:
 					ventana.FindElement(tupla[1]).Update(button_color=('black', 'darkblue'))
@@ -188,6 +187,8 @@ while True:
 				lista_Keys=[]
 				ok=True
 		else:
+			print('2')
+			print(ok)
 			sg.Popup('Palabra incorrecta')
 			for tupla in listaFin:
 				ventana.FindElement(tupla[1]).Update(button_color=('black', 'darkblue'))

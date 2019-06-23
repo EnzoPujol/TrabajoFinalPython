@@ -64,22 +64,18 @@ def fuente():
 			else:
 				sg.Popup('Por favor, elija una de las fuentes disponibles.')	
 def cantTipos():
-	
 	layoutCant = [[sg.Text('Ingrese cantidad de sustantivos, adjetivos y verbos en orden, separados por coma:')], [sg.Input('', size=(5,5))], [sg.Button('Confirmar')]]
-	
 	ventanaCant = sg.Window('Cantidad de palabras').Layout(layoutCant)
-	
 	while True:
 		event, values = ventanaCant.Read()
-		if event is None:
+		if event == None:
 			break
 		elif event == 'Confirmar':
 			return values[0].split(',')
+			break
 
 	
 #Recordar hacer def para no ejecutar solo
-listaCantPal = cantTipos()
-print(listaCantPal)
 archivoJson=open('config.json','w+')
 
 diseñoPalabras = [[sg.Text('Ingrese las palabra a buscar: ')],
@@ -95,7 +91,6 @@ print(listaCantPal)
 contSustantivos, contAdjetivos, contVerbos = 0,0,0
 while True:
 	event, values = ventanaPal.Read()
-	
 	if event is None:
 		exit(0)
 	elif event == 'Agregar':
@@ -147,6 +142,7 @@ while True:
 				if contVerbos < int(listaCantPal[2]):
 					listaJSONPal.append(dic)
 					contVerbos+=1
+			print(listaJSONPal)
 		elif strTipo != palTag[0][1]:
 			#Usar definición de Wiktionary y hacer reporte de la diferencia de pattern.
 			dic={}
