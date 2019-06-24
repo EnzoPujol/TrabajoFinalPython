@@ -1,3 +1,5 @@
+#Autores: Enzo Ulises Pujol - Pedro Hasalik
+
 import PySimpleGUI as sg
 import json
 import string
