@@ -3,5 +3,15 @@
         "Palabra": "palabra",
         "Definicion": "Unidad mínima de significado de una lengua o idioma. ",
         "Tipo": "NN"
+    },
+    {
+        "Palabra": "falacia",
+        "Definicion": "Engaño, fraude o mentira con que se intenta perjudicar a otro",
+        "Tipo": "NN"
+    },
+    {
+        "Palabra": "correr",
+        "Definicion": "Desplazarse rápidamente sobre el suelo mediante el movimiento alternado de las piernas o de las patas.",
+        "Tipo": "VB"
     }
 ]

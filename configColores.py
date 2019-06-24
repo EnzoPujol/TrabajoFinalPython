@@ -74,6 +74,38 @@ def cantTipos():
 			return values[0].split(',')
 			break
 
+def lookAndFeel():
+	
+	archLAF=open('datos-oficinas.json', "r")
+	
+	listaJSONLAF= json.load(archLAF)
+	
+	listaOficinas = list(map(lambda x: x['Oficina'], listaJSONLAF))
+	
+	layoutLAF = [[sg.Text('Elija una de las oficinas para el fondo:')], [sg.Input('', size=(20,5))] ,[sg.Listbox(values=listaOficinas, size=(15,5))], [sg.Button('Confirmar')]]
+	
+	ventanaLAF= sg.Window('Fondo').Layout(layoutLAF)
+	
+	while True:
+		ok=False
+		event, values= ventanaLAF.Read()
+		if event == None:
+			break
+		elif event == 'Confirmar':
+			for i in listaJSONLAF:
+				if values[0].capitalize() == i['Oficina']:
+					ok=True
+					listaTemp = i['Temp']
+					suma = sum(listaTemp)
+					promedio = suma / len(listaTemp)
+					if promedio <= 15:
+						return 'Purple'
+					elif promedio > 15 and promedio <=30:
+						return 'BlueMono'
+					else:
+						return 'SandyBeach'	
+			if not ok:
+				sg.Popup('La oficina ingresada no existe.')		
 	
 #Recordar hacer def para no ejecutar solo
 archivoJson=open('config.json','w+')
@@ -142,7 +174,6 @@ while True:
 				if contVerbos < int(listaCantPal[2]):
 					listaJSONPal.append(dic)
 					contVerbos+=1
-			print(listaJSONPal)
 		elif strTipo != palTag[0][1]:
 			#Usar definición de Wiktionary y hacer reporte de la diferencia de pattern.
 			dic={}
@@ -221,7 +252,6 @@ while True:
 			for i in coloresElegidos:
 				indAux = coloresES.index(i)
 				colElegEnglish.append(coloresEN[indAux])
-			print(colElegEnglish)
 			cont=0
 			for x in colElegEnglish:
 				dicColor = {}
@@ -240,16 +270,17 @@ while True:
 		else:
 			archivoColores = open('coloresElegidos.json', "w")
 			json.dump(listaJson, archivoColores)	
-			archivoColores.close()	
-			print(listaJson)		
+			archivoColores.close()		
 		break
 
 dic_configMisc['Ayuda'] = ayuda()
 dic_configMisc['Fuente'] = fuente()
 dic_configMisc['Orientación'] = orientacion()
 dic_configMisc['MayusMinus'] = upperLower()
+dic_configMisc['LookAndFeel'] = lookAndFeel()
 
 archConfigMisc = open('configMisc.json', "w")
 listaJSONMisc = []
 listaJSONMisc.append(dic_configMisc)
 json.dump(listaJSONMisc, archConfigMisc, ensure_ascii=False, indent=4)
+

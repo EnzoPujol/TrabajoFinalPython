@@ -4,13 +4,36 @@ import string
 import random
 
 
+layoutGeneral = [[sg.Text('Bienvenido al juego.')], [sg.Button('Jugar'), sg.Button('Configurar')]]
+ventanaGeneral = sg.Window('Sopa de letras').Layout(layoutGeneral)
 
-window_background_color = 'Black'
-archCol = open('coloresElegidos.json', "r")
-archPal = open('config.json', "r")
-archConfigMisc = open('configMisc.json', "r")
-listaAyuda = json.load(archConfigMisc)
-listaPal = json.load(archPal)
+while True:
+	event, values = ventanaGeneral.Read()
+	if event == None:
+		exit(0)
+	elif event == 'Jugar':
+		try:
+			archCol = open('coloresElegidos.json', "r")
+			archPal = open('config.json', "r")
+			archConfigMisc = open('configMisc.json', "r")
+			listaAyuda = json.load(archConfigMisc)
+			listaPal = json.load(archPal)
+		except:
+			sg.Popup('No se realizó ninguna configuración previa.')
+			import configColores
+			break
+		else:
+			break
+	elif event == 'Configurar':
+		archCol = open('coloresElegidos.json', "r")
+		archPal = open('config.json', "r")
+		archConfigMisc = open('configMisc.json', "r")
+		listaAyuda = json.load(archConfigMisc)
+		listaPal = json.load(archPal)
+		import configColores
+		break
+
+window_background_color = listaAyuda[0]['LookAndFeel']
 
 def MayusMinus(opcion):
 	
@@ -161,7 +184,6 @@ while True:
 		for tupla in listaFin:
 			palabra=palabra+tupla[0]
 		palabra=palabra.lower()
-		print(palabra)
 		ok=True
 		if palabra in listaAux1:
 			for elem in listaPal:
@@ -178,8 +200,6 @@ while True:
 				else:
 					ok=False
 			if ok == False:
-				print('1')
-				print(ok)
 				sg.Popup('Palabra incorrecta')
 				for tupla in listaFin:
 					ventana.FindElement(tupla[1]).Update(button_color=('black', 'darkblue'))
@@ -187,8 +207,6 @@ while True:
 				lista_Keys=[]
 				ok=True
 		else:
-			print('2')
-			print(ok)
 			sg.Popup('Palabra incorrecta')
 			for tupla in listaFin:
 				ventana.FindElement(tupla[1]).Update(button_color=('black', 'darkblue'))
@@ -226,7 +244,6 @@ while True:
 			
 			
 	else:
-		print(event)
 		ventana.FindElement(event).Update(button_color=('black', colorBoton))
 		auxLetra = (ventana.FindElement(event).ButtonText, event)
 		if auxLetra not in listaFin:
@@ -234,7 +251,7 @@ while True:
 		else: 
 			for tupla in listaFin:
 				if event == tupla[1]:
-					ventana.FindElement(event).Update(button_color=('black', 'darkblue'))
+					ventana.FindElement(event).Update(button_color=('white', 'darkblue'))
 					listaFin.pop(listaFin.index(tupla))
 
 		

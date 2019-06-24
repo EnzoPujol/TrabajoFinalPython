@@ -1,0 +1,21 @@
+[
+
+	{
+		"Oficina": "Oficina1",
+		"Temp": [5, 2, 8, 5, 12]
+
+	},
+	{
+		"Oficina": "Oficina2",
+		"Temp": [15, 20, 24, 14, 9]
+
+	},
+	
+	{
+		"Oficina": "Oficina3",
+		"Temp": [28, 30, 36, 40, 29]
+
+	}
+
+
+]

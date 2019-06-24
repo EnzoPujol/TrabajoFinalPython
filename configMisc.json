@@ -1,8 +1,9 @@
 [
     {
-        "Ayuda": "Solo Definicion",
-        "Fuente": "Times",
+        "Ayuda": "Solo Palabras",
+        "Fuente": "Arial",
         "Orientación": "Horizontal",
-        "MayusMinus": "Minúsculas"
+        "MayusMinus": "Mayúsculas",
+        "LookAndFeel": "BlueMono"
     }
 ]
