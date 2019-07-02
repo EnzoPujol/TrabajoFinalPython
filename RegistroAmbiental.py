@@ -6,6 +6,7 @@ from luma.core.virtual import viewport
 from luma.core.legacy import text, show_message
 from luma.core.legacy.font import proportional, CP437_FONT, TINY_FONT, SINCLAIR_FONT, LCD_FONT
 import RPi.GPIO as GPIO
+import time
 
 class Temperatura:
 
@@ -49,6 +50,6 @@ matriz = Matriz()
 microfono = Microfono()
 temperatura = Temperatura()
 
-while true:
+while True:
      time.sleep(0.1)
      microfono.detectar(acciones)
