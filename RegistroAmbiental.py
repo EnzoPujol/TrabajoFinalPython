@@ -29,9 +29,10 @@ class Microfono:
         GPIO.setwarnings(False)
         GPIO.add_event_detect(self._canal, GPIO.RISING)
 
-    def detectar(self,funcion,i=0,parametros):
+    def detectar(self,funcion,parametros,i=0):
         while i<1:
             if GPIO.event_detected(self._canal):
+                print('lee2')
                 funcion(**parametros)
                 i=i+1
 
@@ -49,7 +50,7 @@ def acciones(temperaturas=[]):
     temp_data = temperatura.leer_datos()
     temp_formateada = 'Temperatura = {0:0.1f}°C  Humedad = {1:0.1f}%'.format(temp_data['temperatura'], temp_data['humedad'])
     matriz.mostrar_mensaje(temp_formateada, delay=0.08, font=2)
-    temperaturas.append(temp_data[temperatura])
+    temperaturas.append(temp_data['temperatura'])
 
 
 matriz = Matriz()
@@ -61,7 +62,7 @@ listaJson=[]
 layout=[[sg.Text('Ingrese el nombre de la oficina:')],
         [sg.Input('', size=(20,5))],
         [sg.Listbox(values=[], size=(15,15), key='oficinas')],
-        [sg.Button('Agregar Oficina'),sg.Button('Salir')]
+        [sg.Button('Agregar Oficina'),sg.Button('Comenzar medicion') ,sg.Button('Salir')]
 
 ]
 
@@ -80,8 +81,8 @@ while True:
         listaOficinas.append(values[0])
         window.FindElement('oficinas').Update(listaOficinas)
         oficina['Oficina']=values[0]
-    if event=='Comenzar medición':
-        microfono.detectar(acciones,i=0,dict(temperaturas=temperaturas))
+    if event=='Comenzar medicion':
+        microfono.detectar(acciones,dict(temperaturas=temperaturas))
         oficina['Temp']=temperaturas
         listaJson.append(oficina)
 
