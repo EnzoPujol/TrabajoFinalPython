@@ -7,6 +7,8 @@ from luma.core.legacy import text, show_message
 from luma.core.legacy.font import proportional, CP437_FONT, TINY_FONT, SINCLAIR_FONT, LCD_FONT
 import RPi.GPIO as GPIO
 import time
+import PySimpleGUI as sg
+import json
 
 class Temperatura:
 
@@ -27,9 +29,12 @@ class Microfono:
         GPIO.setwarnings(False)
         GPIO.add_event_detect(self._canal, GPIO.RISING)
 
-    def detectar(self, funcion):
-        if GPIO.event_detected(self._canal):
-            funcion()
+    def detectar(self,funcion,i=0,parametros):
+        while i<1:
+            if GPIO.event_detected(self._canal):
+                funcion(**parametros)
+                i=i+1
+
 class Matriz:
     def __init__(self, numero_matrices=1, orientacion=0, rotacion=0, ancho=8, alto=8):
         self.font = [CP437_FONT, TINY_FONT, SINCLAIR_FONT, LCD_FONT]
@@ -40,16 +45,44 @@ class Matriz:
         show_message(self.device, msg, fill="white",
                      font=proportional(self.font[font]),
                      scroll_delay=delay)
-def acciones():
-    print ("Sonido Detectado!")
+def acciones(temperaturas=[]):
     temp_data = temperatura.leer_datos()
     temp_formateada = 'Temperatura = {0:0.1f}°C  Humedad = {1:0.1f}%'.format(temp_data['temperatura'], temp_data['humedad'])
     matriz.mostrar_mensaje(temp_formateada, delay=0.08, font=2)
+    temperaturas.append(temp_data[temperatura])
+
 
 matriz = Matriz()
 microfono = Microfono()
 temperatura = Temperatura()
+arch=open('datos-oficinas.json', "w")
+listaJson=[]
+
+layout=[[sg.Text('Ingrese el nombre de la oficina:')],
+        [sg.Input('', size=(20,5))],
+        [sg.Listbox(values=[], size=(15,15), key='oficinas')],
+        [sg.Button('Agregar Oficina'),sg.Button('Salir')]
+
+]
+
+listaOficinas=[]
+oficina={}
+temperaturas=[]
+
+window= sg.Window('Registro ambiental').Layout(layout)
+
 
 while True:
-     time.sleep(0.1)
-     microfono.detectar(acciones)
+    event, values = window.Read()
+    if event== None or event=='Salir':
+        break
+    if event=='Agregar Oficina':
+        listaOficinas.append(values[0])
+        window.FindElement('oficinas').Update(listaOficinas)
+        oficina['Oficina']=values[0]
+    if event=='Comenzar medición':
+        microfono.detectar(acciones,i=0,dict(temperaturas=temperaturas))
+        oficina['Temp']=temperaturas
+        listaJson.append(oficina)
+
+json.dump(listaJson, arch, ensure_ascii=False, indent=4)    
